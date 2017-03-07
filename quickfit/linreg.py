@@ -1,33 +1,21 @@
 #!/usr/bin/env python
-import skLearnModel
+from precleaned_model import PrecleanedModel
 import pandas as pd
 import sys
 import sklearn.linear_model
-from utils import pretty_print_df, fix_broken_pipe
+from utils import pretty_print_df #TODO(jtrigg) include these function in this package or in jtutils
 import argparse
+from pcsv.any2csv import df2pretty
 
-class LinReg(skLearnModel.SKLearnModel, skLearnModel.QuickFitMixin):
+class LinReg(PrecleanedModel):
     def __init__(self):
-        self.readCL()
-        if self.args.no_scale:
-            self.no_scale = True
-        else:
-            self.no_scale = False
-
-        args = {}
-        if self.args.no_intercept:
-            args["fit_intercept"] = False
-
-        if self.args.alpha is not None:
-            self.raw_mdl = sklearn.linear_model.Lasso(alpha=self.args.alpha, **args)
-        else:
-            self.raw_mdl = sklearn.linear_model.LassoCV(**args)
+        self.raw_mdl = sklearn.linear_model.LassoCV()
     def model_desc(self):
         #get feature names from dataCleaner object
         feature_names = ["(Intercept)"] + self.feature_names()
         normed_coeffs = self.coeffs()
         normed_intercept = self.intercept()
-        
+
         if not self.no_scale:
             means = self.feature_means()
             sds = self.feature_stds()
@@ -48,7 +36,7 @@ class LinReg(skLearnModel.SKLearnModel, skLearnModel.QuickFitMixin):
     def coeffs(self):
         return list((self.mdl.steps[-1][1].coef_))
     def intercept(self):
-        return list([self.mdl.steps[-1][1].intercept_])        
+        return list([self.mdl.steps[-1][1].intercept_])
     def print_model(self):
         sys.stderr.write("N: " + str(self.N) + "\n")
         if self.args.alpha is None: #alpha determined by cv
@@ -58,31 +46,24 @@ class LinReg(skLearnModel.SKLearnModel, skLearnModel.QuickFitMixin):
             rmse = overall_mse ** 0.5
             sys.stderr.write("cross-validation training error: " + str(rmse) + "\n")
         if not self.no_scale:
-            sys.stderr.write("-----" + '\n')
+            sys.stderr.write('\n' + "-----" + '\n')
             sys.stderr.write("Feature means:" + '\n')
             means = pd.DataFrame([self.feature_means()], columns = self.feature_names())
-            sys.stderr.write(pretty_print_df(means))
-            sys.stderr.write("-----" + '\n')
+            sys.stderr.write(df2pretty(means))
+            sys.stderr.write( '\n' + "-----" + '\n')
             sys.stderr.write("Feature sds:" + '\n')
             sds = pd.DataFrame([self.feature_stds()], columns = self.feature_names())
-            sys.stderr.write(pretty_print_df(sds))
-            sys.stderr.write("-----" + '\n')
+            sys.stderr.write(df2pretty(sds))
+            sys.stderr.write( '\n' + "-----" + '\n')
             sys.stderr.write("Normalized coefficients:" + '\n')
             coeffs = pd.DataFrame([self.coeffs()], columns = self.feature_names())
-            sys.stderr.write(pretty_print_df(coeffs))
-        sys.stderr.write("-----"  + '\n')
+            sys.stderr.write(df2pretty(coeffs))
+        sys.stderr.write('\n' + "-----"  + '\n')
         sys.stderr.write("Raw coefficients:" + '\n')
-        sys.stderr.write(pretty_print_df(self.model_df()))
-        sys.stderr.write(str(self.model_dict()) + "\n")
+        sys.stderr.write(df2pretty(self.model_df()))
+        sys.stderr.write('\n' + str(self.model_dict()) + "\n")
     def add_subclass_args(self, parser):
         parser.add_argument("-a","--alpha",type=float)
         parser.add_argument("--no_scale",action="store_true")
         parser.add_argument("--no_intercept",action="store_true")
         return parser
-        
-
-if __name__ == "__main__":
-    fix_broken_pipe()
-    a = LinReg()
-    a.main()
-    a.print_model()
