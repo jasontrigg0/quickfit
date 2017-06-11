@@ -3,7 +3,6 @@ from precleaned_model import PrecleanedModel
 import pandas as pd
 import sys
 import sklearn.linear_model
-from utils import pretty_print_df #TODO(jtrigg) include these function in this package or in jtutils
 import argparse
 from pcsv.any2csv import df2pretty
 
