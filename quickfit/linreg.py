@@ -10,6 +10,9 @@ from pcsv.any2csv import df2pretty
 class LinReg(PrecleanedModel):
     def __init__(self):
         self.raw_mdl = sklearn.linear_model.LassoCV()
+
+        #call super after raw_mdl is set
+        super(LinReg, self).__init__()
     def model_desc(self):
         #get feature names from dataCleaner object
         feature_names = ["(Intercept)"] + self.feature_names()

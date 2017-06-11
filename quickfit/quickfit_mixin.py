@@ -86,7 +86,7 @@ class QuickFitMixin(object):
 
     def add_subclass_args(self, parser):
         #override in subclass
-        pass
+        return parser
 
     def main(self):
         #run readCL if not already completed

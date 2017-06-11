@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import pandas as pd
 import sklearn.pipeline
+import sklearn.grid_search
 import random
 from data_cleaner import DataCleaner
 from distr_warning import DistrWarning
 from trimmer import Trimmer
+from collections import defaultdict
 """
 A few quick preprocessing steps to run before passing raw data into a standard model (eg Lasso regression)
 For example: rescale variables to std=1, remove non-numeric values (and impute their true value), trim outliers
@@ -46,7 +48,6 @@ class PrecleanedModel(object):
         self.mdl = sklearn.pipeline.Pipeline(pipeline_steps)
     def fit(self, df_features, df_target):
         self.N = len(df_target)
-        self.model_setup() #set the model
         self.mdl.fit(df_features, df_target)
     def feature_names(self):
         return list(self.mdl.named_steps["cleaner"].get_feature_names())

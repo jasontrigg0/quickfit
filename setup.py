@@ -8,7 +8,7 @@ setup(
     author_email = "jasontrigg0@gmail.com",
     url = "https://github.com/jasontrigg0/quickfit",
     download_url = 'https://github.com/jasontrigg0/quickfit/tarball/0.0.0',
-    scripts=["quickfit/linreg"],
+    scripts=["quickfit/linreg", "quickfit/logistic"],
     install_requires=[],
     keywords = [],
     classifiers = [],

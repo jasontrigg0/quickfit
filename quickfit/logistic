@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+from quickfit.quickfit_mixin import QuickFitMixin
+from quickfit.logistic import LogisticReg
+from jtutils import fix_broken_pipe
+
+class LogisticCL(LogisticReg, QuickFitMixin):
+   """
+   Logistic regression model from the command line
+   """
+   def __init__(self):
+      super(LogisticCL, self).__init__()
+      self.readCL()
+      print(self.args)
+      if self.args.no_scale:
+         self.no_scale = True
+      else:
+         self.no_scale = False
+
+if __name__ == "__main__":
+   fix_broken_pipe()
+   mdl = LogisticCL()
+   mdl.main()
+   mdl.print_model()
