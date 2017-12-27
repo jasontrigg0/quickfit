@@ -1,1 +1,1 @@
-from linreg import LinReg
+from .linreg import LinReg

@@ -3,9 +3,9 @@ import pandas as pd
 import sklearn.pipeline
 import sklearn.grid_search
 import random
-from data_cleaner import DataCleaner
-from distr_warning import DistrWarning
-from trimmer import Trimmer
+from .data_cleaner import DataCleaner
+from .distr_warning import DistrWarning
+from .trimmer import Trimmer
 from collections import defaultdict
 """
 A few quick preprocessing steps to run before passing raw data into a standard model (eg Lasso regression)

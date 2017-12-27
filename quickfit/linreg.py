@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from precleaned_model import PrecleanedModel
+from .precleaned_model import PrecleanedModel
 import pandas as pd
 import sys
 import sklearn.linear_model
