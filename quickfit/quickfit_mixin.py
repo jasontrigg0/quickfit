@@ -3,6 +3,7 @@ import random
 import sys
 import numpy as np
 from jtutils import str_is_int
+import os
 """
 QuickFitMixin adds support for quick use at the command line
 Allows easy model load/save and breaking into train/test sets
