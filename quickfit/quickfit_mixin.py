@@ -71,6 +71,7 @@ class QuickFitMixin(object):
         parser.add_argument("-c","--keep_cols",help="feature columns to keep")
         parser.add_argument("-C","--drop_cols",help="feature_columns to drop")
         parser.add_argument("-t","--target",help="name of target variable or file", required=True)
+        parser.add_argument("-w","--weights",help="name of weights variable")
         parser.add_argument("--full",action="store_true",help="more formal fitting, with trimming, leaving out validation and test sets, etc")
         parser.add_argument("--fit_subset", default="111", help="Data is split 60%%-20%%-20%% into training, validation and test sets. Select them using three 0-1 digits, one for each set. Example: '100' = training only. '001' = test only. '111' = all data")
         parser.add_argument("--pred_subset", default="111", help="Data is split 60%%-20%%-20%% into training, validation and test sets. Select them using three 0-1 digits, one for each set. Example: '100' = training only. '001' = test only. '111' = all data")
@@ -141,7 +142,14 @@ class QuickFitMixin(object):
         else:
             fit_features = select_pseudorandom(df_features, self.args.fit_subset)
             fit_target = select_pseudorandom(df_target, self.args.fit_subset)
-            self.fit(fit_features, fit_target)
+            fit_weights = None
+
+            if self.args.weights:
+                weights = self.args.weights
+                df_weights = df[weights]
+                fit_weights = select_pseudorandom(df_weights, self.args.fit_subset)
+                
+            self.fit(fit_features, fit_target, sample_weight=fit_weights)
 
         #save model
         if self.args.save_model_file:

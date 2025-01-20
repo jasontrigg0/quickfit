@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import pandas as pd
 import sklearn.pipeline
-import sklearn.grid_search
+import sklearn.model_selection
+import sklearn.impute
 import random
+import numpy as np
 from .data_cleaner import DataCleaner
 from .distr_warning import DistrWarning
 from .trimmer import Trimmer
@@ -39,16 +41,16 @@ class PrecleanedModel(object):
 
         fitting_steps = [
             ('trimmer', Trimmer(trim_frac)),
-            ('imputer', sklearn.preprocessing.Imputer(missing_values='NaN', strategy='mean', axis=0)),
+            ('imputer', sklearn.impute.SimpleImputer(missing_values=np.nan,strategy='mean')),
         ] + scaling_step + [
             ('main_model',self.raw_mdl),
         ]
 
         pipeline_steps = preproc_steps + fitting_steps
         self.mdl = sklearn.pipeline.Pipeline(pipeline_steps)
-    def fit(self, df_features, df_target):
+    def fit(self, df_features, df_target, sample_weight=None):
         self.N = len(df_target)
-        self.mdl.fit(df_features, df_target)
+        self.mdl.fit(df_features, df_target, **{'main_model__sample_weight': sample_weight})
     def feature_names(self):
         return list(self.mdl.named_steps["cleaner"].get_feature_names())
     def feature_means(self):
@@ -67,7 +69,7 @@ class PrecleanedModel(object):
             #isn't working when self.mdl is a pipeline
             #and the last step of the pipeline is a gridsearchCV
             #so grab classes manually
-            if isinstance(self.mdl, sklearn.pipeline.Pipeline) and isinstance(self.mdl.steps[-1][-1], sklearn.grid_search.GridSearchCV):
+            if isinstance(self.mdl, sklearn.pipeline.Pipeline) and isinstance(self.mdl.steps[-1][-1], sklearn.model_selection.GridSearchCV):
                 classes = self.mdl.steps[-1][-1].best_estimator_.classes_
             else:
                 classes = self.mdl.classes_
@@ -81,8 +83,8 @@ class PrecleanedModel(object):
             return pd.DataFrame(preds.values,columns=["pred"])
         else:
             return pd.DataFrame(preds, columns=["pred"])
-    def fit_transform(self, X, y):
-        self.fit(X,y)
+    def fit_transform(self, X, y, sample_weight=None):
+        self.fit(X,y, **{'main_model__sample_weight': sample_weight})
         return self.transform(X)
     @classmethod
     def save_output(cls, preds, save_pred_file):

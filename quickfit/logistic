@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from quickfit.quickfit_mixin import QuickFitMixin
 from quickfit.logistic import LogisticReg
 from jtutils import fix_broken_pipe

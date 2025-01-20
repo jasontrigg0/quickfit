@@ -10,7 +10,7 @@ setup(
     url = "https://github.com/jasontrigg0/quickfit",
     download_url = 'https://github.com/jasontrigg0/quickfit/tarball/0.0.0',
     scripts=["quickfit/linreg", "quickfit/logistic"],
-    install_requires=["pcsv"],
+    install_requires=["pcsv","scikit-learn"],
     keywords = [],
     classifiers = [],
 )
